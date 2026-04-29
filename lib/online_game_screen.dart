@@ -160,6 +160,9 @@ class _OnlineGameScreenState extends State<OnlineGameScreen>
       final updates = <String, dynamic>{
         '${myKey}Submitted': true,
         '${myKey}RoundScore': score,
+        '${myKey}GuessH': _guessHue,
+        '${myKey}GuessS': _guessSat,
+        '${myKey}GuessV': _guessVal,
       };
 
       if (oppSubmitted) {
@@ -186,6 +189,9 @@ class _OnlineGameScreenState extends State<OnlineGameScreen>
           .collection('rooms')
           .doc(widget.roomId)
           .update({'status': 'finished'});
+      Future.delayed(const Duration(seconds: 4), () {
+        FirebaseFirestore.instance.collection('rooms').doc(widget.roomId).delete();
+      });
     } else {
       await FirebaseFirestore.instance
           .collection('rooms')
@@ -543,30 +549,32 @@ class _OnlineGameScreenState extends State<OnlineGameScreen>
     final myScoreColor = _scoreColor(myScore);
     final isLastRound = (room['currentRound'] as int? ?? 1) >= totalRounds;
 
+    final targetColor = _targetColor(room);
+
+    Color _guessColorFromRoom(String key) {
+      final h = (room['${key}GuessH'] as num?)?.toDouble() ?? 180;
+      final s = (room['${key}GuessS'] as num?)?.toDouble() ?? 0.5;
+      final v = (room['${key}GuessV'] as num?)?.toDouble() ?? 0.5;
+      return HSVColor.fromAHSV(1, h, s, v).toColor();
+    }
+
+    final myGuessColor = _guessColorFromRoom(myKey);
+    final oppGuessColor = _guessColorFromRoom(oppKey);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Target color revealed
-        Container(
-          width: double.infinity,
-          height: 120,
-          decoration: BoxDecoration(
-            color: _targetColor(room),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                // ignore: deprecated_member_use
-                color: _targetColor(room).withOpacity(0.5),
-                blurRadius: 32,
-                spreadRadius: 3,
-              ),
-            ],
-          ),
+        // Three colors side by side
+        Row(
+          children: [
+            Expanded(child: _buildColorCard('Sen', myGuessColor)),
+            const SizedBox(width: 10),
+            Expanded(child: _buildColorCard('Hedef', targetColor, isTarget: true)),
+            const SizedBox(width: 10),
+            Expanded(child: _buildColorCard('Rakip', oppGuessColor)),
+          ],
         ),
-        const SizedBox(height: 8),
-        const Text('Hedef renk',
-            style: TextStyle(color: Colors.white38, fontSize: 12)),
-        const SizedBox(height: 28),
+        const SizedBox(height: 24),
         // Scores comparison
         Row(
           children: [
@@ -618,6 +626,42 @@ class _OnlineGameScreenState extends State<OnlineGameScreen>
                   style: TextStyle(color: Colors.white38, fontSize: 14)),
             ],
           ),
+      ],
+    );
+  }
+
+  Widget _buildColorCard(String label, Color color, {bool isTarget = false}) {
+    return Column(
+      children: [
+        Container(
+          height: 100,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(18),
+            border: isTarget
+                ? Border.all(
+                    // ignore: deprecated_member_use
+                    color: Colors.white.withOpacity(0.4),
+                    width: 2,
+                  )
+                : null,
+            boxShadow: [
+              BoxShadow(
+                // ignore: deprecated_member_use
+                color: color.withOpacity(0.45),
+                blurRadius: 20,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(label,
+            style: TextStyle(
+              color: isTarget ? Colors.white60 : Colors.white38,
+              fontSize: 12,
+              fontWeight: isTarget ? FontWeight.w600 : FontWeight.w400,
+            )),
       ],
     );
   }
