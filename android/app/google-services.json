@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "758946233242",
+    "project_id": "colorisma-74ea8",
+    "storage_bucket": "colorisma-74ea8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:758946233242:android:cad73e838969ac0b91d823",
+        "android_client_info": {
+          "package_name": "com.example.my_game"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHqdXHgJ4Wmx-ib9XOVKRlanYAUeuKZ74"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

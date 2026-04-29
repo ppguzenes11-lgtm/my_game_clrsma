@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter analyze *)",
+      "Bash(flutter run *)",
+      "Bash(dart pub *)",
+      "Bash(taskkill /F /IM dart.exe)",
+      "Bash(npm install *)",
+      "Bash(firebase *)",
+      "Bash(flutter pub *)"
+    ]
+  }
+}
